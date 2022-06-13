@@ -38,6 +38,10 @@ end
 begin
 	# control volume
 	# E → W → N → S
+	idE = 1
+	idW = 2
+	idN = 3
+	idS = 4
 	nx = nxg - 1
 	ny = nyg - 1
 	nxy = nx*ny
@@ -45,17 +49,33 @@ begin
 	y = zeros(ny)
 	q = zeros((nx, ny))
 	dV = zeros((nx, ny))
-	dS = zeros((nx, ny, 4))
-	coeff = zeros((nx, ny, 4))
+	dSx = zeros((nx, ny))
+	dSy = zeros((nx, ny))
+	dV = zeros((nx, ny))
+	anbT = zeros((nx, ny, 4))
+	acT = zeros((nx, ny))
+	dnb = zeros((nx, ny, 4))
 	for ix in eachindex(x)
 		x[ix] = (xg[ix] + xg[ix + 1])/2
+		dSy[ix,:] .= (xg[ix + 1] - xg[ix])
+
+		xE = ((ix + 1 <= nx) ? x[ix + 1] : xg[end])
+		xW = ((ix - 1 >= 1)  ? x[ix - 1] : xg[begin])
+		dnb[ix,:,idE] .= xE - x[ix]
+		dnb[ix,:,idW] .= x[ix] - xW
 	end
 	for iy in eachindex(y)
 		y[iy] = (yg[iy] + yg[iy + 1])/2
+		dSx[:,iy] .= (yg[iy + 1] - yg[iy])
+
+		yN = ((iy + 1 <= ny) ? y[iy + 1] : yg[end])
+		yS = ((iy - 1 >= 1)  ? y[iy - 1] : yg[begin])
+		dnb[:,iy,idN] .= yN - y[iy]
+		dnb[:,iy,idS] .= y[iy] - yS
 	end
 	for ix in eachindex(x)
 		for iy in eachindex(y)
-			
+			dV[ix,iy] = dSx[ix, iy]*dSy[ix,iy]
 		end
 	end
 end
