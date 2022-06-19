@@ -4,6 +4,18 @@
 using Markdown
 using InteractiveUtils
 
+# ╔═╡ 9f44342d-5728-41ef-90f0-62a7b6b5d34e
+begin
+	abstract type BoundaryCondition end
+	struct Dirichlet <: BoundaryCondition end
+	struct Neumann <: BoundaryCondition end
+	struct Mixed <: BoundaryCondition end
+	Te = 0
+	Tw = 100
+	Tn = 100
+	Ts = 0
+end
+
 # ╔═╡ c0770319-978d-42c4-bf84-a50364db313e
 begin
 	# grid generation
@@ -52,6 +64,7 @@ begin
 	dSx = zeros((nx, ny))
 	dSy = zeros((nx, ny))
 	dV = zeros((nx, ny))
+	q = zeros((nx, ny))
 	anbT = zeros((nx, ny, 4))
 	acT = zeros((nx, ny))
 	dnb = zeros((nx, ny, 4))
@@ -82,8 +95,25 @@ end
 
 # ╔═╡ d70e2902-08d0-45b8-8705-2f5b6c238c60
 begin
-	# boundary condition
+	for ix in eachindex(x)
+		for iy in eachindex(y)
+			anbT[ix, iy, idE] =  k*dSy[ix,iy]/dnb[ix, iy, idE]
+			anbT[ix, iy, idW] = -k*dSy[ix,iy]/dnb[ix, iy, idW]	
+			anbT[ix, iy, idN] =  k*dSx[ix,iy]/dnb[ix, iy, idN]
+			anbT[ix, iy, idS] = -k*dSx[ix,iy]/dnb[ix, iy, idS]	
+			if(ix == 1)
+				anbT[ix, iy, idW] = 0.0
+			end
+			if(ix == nx)
+			end
+			if(iy == 1)
+			end
+			if(iy == ny)
+			end
+		end
+	end
 end
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -101,6 +131,7 @@ manifest_format = "2.0"
 """
 
 # ╔═╡ Cell order:
+# ╠═9f44342d-5728-41ef-90f0-62a7b6b5d34e
 # ╠═c0770319-978d-42c4-bf84-a50364db313e
 # ╠═53adbf14-bbfe-406d-ac43-91807747fac4
 # ╠═d5acaec8-f748-46f7-9c86-68a822583d8f
